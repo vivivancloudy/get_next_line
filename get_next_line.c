@@ -6,7 +6,7 @@
 /*   By: thdinh <thdinh@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 11:52:29 by thdinh            #+#    #+#             */
-/*   Updated: 2025/02/04 13:40:29 by thdinh           ###   ########.fr       */
+/*   Updated: 2025/02/04 18:02:54 by thdinh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,8 @@ static char *get_line(char **buffer)
     size_t len;
     char    *tmp;
 
+    if (!buffer || !*buffer || **buffer == '\0')
+        return (NULL);
     newline = ft_strchr(*buffer, '\n');
     if (newline)
         len = newline - *buffer + 1;
@@ -32,8 +34,10 @@ static char *get_line(char **buffer)
     if (newline)
     {
         tmp = ft_strdup(newline + 1);
+        if (!tmp)
+            return (free(*buffer), *buffer = NULL, NULL);
         free(*buffer);
-        *buffer = tmp;  
+        *buffer = tmp;
     }
     else
     {
@@ -53,7 +57,11 @@ char    *get_next_line(int fd)
     while ((bytes_read = read(fd, tmp_buffer, BUFFER_SIZE)) > 0)
     {
         tmp_buffer[bytes_read] = '\0';
+        //printf("Read %zd bytes: %s\n", bytes_read, tmp_buffer); // Debugging print
         buffer = ft_strjoin(buffer, tmp_buffer);
+        if (!buffer)
+            return (NULL);
+        //printf("Buffer after join: %s\n", buffer); // Debugging print
         if (ft_strchr(buffer, '\n'))
             break;
     }
@@ -63,5 +71,9 @@ char    *get_next_line(int fd)
         buffer = NULL;
         return (NULL);
     }
-    return (get_line(&buffer));
+   // printf("Buffer before get_line: %s\n", buffer); // Debugging print
+    char    *line = get_line(&buffer);
+   // printf("Line returned: %s\n", line); // Debugging print
+//    printf("Buffer after get_line: %s\n", buffer); // Debugging print
+    return (line);
 }

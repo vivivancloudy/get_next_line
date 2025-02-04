@@ -6,7 +6,7 @@
 /*   By: thdinh <thdinh@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/04 12:34:43 by thdinh            #+#    #+#             */
-/*   Updated: 2025/02/04 12:40:31 by thdinh           ###   ########.fr       */
+/*   Updated: 2025/02/04 17:03:46 by thdinh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,10 @@ int main(void)
         printf("%s", line);
         free(line);
     }
-
-    close(fd);
+    if (close(fd) == -1)
+    {
+        perror("Error closing file");
+        return (1);
+    }
     return (0);
 }

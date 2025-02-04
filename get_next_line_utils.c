@@ -6,7 +6,7 @@
 /*   By: thdinh <thdinh@student.42berlin.de>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/03 12:11:45 by thdinh            #+#    #+#             */
-/*   Updated: 2025/02/04 13:42:47 by thdinh           ###   ########.fr       */
+/*   Updated: 2025/02/04 17:48:57 by thdinh           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,8 @@ char *ft_strjoin(char *s1, char *s2)
 
     if (!s1 || !s2)
         return (NULL);
+    if (!s1)
+        return (ft_strdup(""));
     joined = (char *)malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
     if (!joined)
         return (NULL);
@@ -60,18 +62,21 @@ char *ft_strjoin(char *s1, char *s2)
     while (s2[j])
         joined[i++] = s2[j++];
     joined[i] = '\0';
+    free(s1);
     return(joined);
 }
 
 char    *ft_strchr(const char *s, int c)
 {
-    while ((char)c != *s )
+    if (!s)
+        return (NULL);
+    while (*s)
     {
-        if (!*s)
-            return (NULL);
+        if (*s == (char)c)
+            return ((char *)s);
         s++;
     }
-    return((char *)s);
+    return(NULL);
 }
 
 char    *ft_strncpy(char * dst, const char * src, size_t len)
