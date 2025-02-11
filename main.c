@@ -1,36 +1,70 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: thdinh <thdinh@student.42berlin.de>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/04 12:34:43 by thdinh            #+#    #+#             */
-/*   Updated: 2025/02/04 17:03:46 by thdinh           ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include "get_next_line.h"
 
-int main(void)
+#define POSITION_FILE ".position"  // File to store last read position
+
+int get_last_position()
 {
-    int fd = open("test.txt", O_RDONLY);
-    if (fd == -1)
+    int position = 0;
+    FILE *file = fopen(POSITION_FILE, "r");
+    if (file)
+    {
+        fscanf(file, "%d", &position);
+        fclose(file);
+    }
+    return position;
+}
+
+void save_position(int position)
+{
+    FILE *file = fopen(POSITION_FILE, "w");
+    if (file)
+    {
+        fprintf(file, "%d", position);
+        fclose(file);
+    }
+}
+
+int main(int argc, char **argv)
+{
+    int fd;
+    char *line;
+    int last_position;
+
+    if (argc != 2)
+    {
+        printf("Usage: %s <filename>\n", argv[0]);
+        return (1);
+    }
+
+    fd = open(argv[1], O_RDONLY);
+    if (fd < 0)
     {
         perror("Error opening file");
         return (1);
     }
 
-    char *line;
-    while ((line = get_next_line(fd)) != NULL)
+    // Get last position and seek to it
+    last_position = get_last_position();
+    lseek(fd, last_position, SEEK_SET);
+
+    // Read one line
+    line = get_next_line(fd);
+    if (line)
     {
         printf("%s", line);
+        save_position(last_position + ft_strlen(line));  // Update position
         free(line);
     }
-    if (close(fd) == -1)
+    else
     {
-        perror("Error closing file");
-        return (1);
+        printf("End of file reached.\n");
+        remove(POSITION_FILE);  // Reset when EOF
     }
+
+    close(fd);
     return (0);
 }
