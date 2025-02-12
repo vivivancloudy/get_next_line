@@ -70,8 +70,12 @@ char	*get_next_line(int fd)
 {
 	static char	*buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, 0, 0))
+	{
+		free(buffer);
+		buffer = NULL;
 		return (NULL);
+	}
 	buffer = read_and_store(fd, buffer);
 	if (!buffer || *buffer == '\0')
 	{
